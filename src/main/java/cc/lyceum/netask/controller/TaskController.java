@@ -53,7 +53,7 @@ public class TaskController {
         return ResMsg.success();
     }
 
-    @PostMapping("startup")
+    @PostMapping("remove")
     public ResMsg<?> remove(@RequestParam String taskId) {
         scheduler.remove(taskId);
         return ResMsg.success();
