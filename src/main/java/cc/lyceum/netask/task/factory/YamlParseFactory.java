@@ -1,5 +1,6 @@
 package cc.lyceum.netask.task.factory;
 
+import cc.lyceum.netask.core.Context;
 import cc.lyceum.netask.core.Node;
 import cc.lyceum.netask.core.SimpleTree;
 import cc.lyceum.netask.core.Tree;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Lyceum
@@ -53,6 +55,11 @@ public class YamlParseFactory {
                 }
                 if (nodeInfo.containsKey("method")) {
                     httpRequestEvent.setMethod(Connection.Method.valueOf((String) nodeInfo.get("method")));
+                }
+                if (nodeInfo.containsKey("data")) {
+                    httpRequestEvent.setData(((Map<String, Object>) nodeInfo.get("data")).entrySet()
+                            .stream()
+                            .collect(Collectors.toMap(Map.Entry::getKey, entry -> String.valueOf(entry.getValue()))));
                 }
                 if (nodeInfo.containsKey("headers")) {
                     httpRequestEvent.setHeaders((Map<String, String>) nodeInfo.get("headers"));
@@ -99,6 +106,7 @@ public class YamlParseFactory {
             checkClosedLoop = (boolean) main.get("check-closed-loop");
         }
         Tree tree = new SimpleTree(checkClosedLoop, new ArrayList<>(nodeMap.values()));
+        tree.setContext(new Context());
 
         // build task
         return new Task(KeyUtils.uuidV4NoDashStr(), tree, cronTrigger);
