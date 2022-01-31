@@ -42,10 +42,10 @@ public class TaskScheduler {
 
     public void schedule(Task task) {
         String id = task.getId();
-        Assert.isTrue(notRunning(id), "the task has already run, or the task id is duplicated");
+        registerTask(task);
+        Assert.isTrue(notRunning(id), "the task has already run, must stop first");
         ScheduledFuture<?> future = scheduler.schedule(task, task.getTrigger());
         task.setFuture(future);
-        taskMap.put(id, task);
     }
 
     public boolean notRunning(String taskId) {
@@ -66,6 +66,11 @@ public class TaskScheduler {
     public boolean shutdown(String taskId, boolean force) {
         return isRunning(taskId)
                 && taskMap.get(taskId).getFuture().cancel(force);
+    }
+
+    public void registerTask(Task task) {
+        Assert.isTrue(!taskMap.containsKey(task.getId()), "the task id is duplicated");
+        taskMap.put(task.getId(), task);
     }
 
     public Collection<Task> getRegisterTaskList() {

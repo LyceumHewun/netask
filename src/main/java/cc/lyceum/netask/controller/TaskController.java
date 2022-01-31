@@ -29,6 +29,13 @@ public class TaskController {
         return ResMsg.success();
     }
 
+    @PostMapping("build/yaml")
+    public ResMsg<?> build(@RequestBody String yaml) {
+        Task task = YamlParseFactory.parse(yaml);
+        scheduler.registerTask(task);
+        return ResMsg.success();
+    }
+
     @GetMapping("list")
     public ResMsg<Collection<Task>> taskList() {
         return ResMsg.success(scheduler.getRegisterTaskList());
