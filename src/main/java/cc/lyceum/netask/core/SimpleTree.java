@@ -43,7 +43,7 @@ public class SimpleTree implements Tree {
     }
 
     @Override
-    public void callNodeActionChain() {
+    public synchronized void callNodeActionChain() {
         callNodeActionChain(root);
     }
 
@@ -51,16 +51,19 @@ public class SimpleTree implements Tree {
         if (Objects.isNull(node))
             return;
 
+        Node next;
         Class<? extends Node> classOfNode = node.getClass();
         if (Event.class.isAssignableFrom(classOfNode)) {
             ((Event) node).action();
-            callNodeActionChain(node.right());
+            next = node.right();
         } else if (Condition.class.isAssignableFrom(classOfNode)) {
-            Node selected = ((Condition) node).judge();
-            callNodeActionChain(selected);
+            next = ((Condition) node).judge();
         } else {
             throw new IllegalArgumentException("unknown Node type");
         }
+
+        // continue
+        callNodeActionChain(next);
     }
 
     /**
