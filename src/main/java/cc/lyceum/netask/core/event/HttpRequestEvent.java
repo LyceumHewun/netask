@@ -40,7 +40,8 @@ public class HttpRequestEvent extends Event {
         // choose cookies
         Map<String, String> cookies = Optional.ofNullable(useContextCookies ? getVariable(COOKIES_VARIABLE) : null)
                 .map(obj -> (Map<String, String>) obj)
-                .orElse(this.cookies);
+                .orElse(new HashMap<>());
+        cookies.putAll(this.cookies);
 
         // exec http request
         Connection.Response response = HttpUtils.exec(this.url,
